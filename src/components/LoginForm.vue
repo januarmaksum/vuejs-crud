@@ -15,7 +15,7 @@ const handleLogin = (e) => {
 <template>
   <div class="min-h-screen bg-gray-100 flex items-center justify-center">
     <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-      <h2 class="leading-none tracking-tight text-2xl font-bold text-center">Welcome back</h2>
+      <h2 class="leading-none tracking-tight text-3xl font-bold text-center">Welcome back</h2>
       <p class="text-center mb-7 mt-2 text-sm text-gray-500">
         Enter your credentials to sign in to your account
       </p>
