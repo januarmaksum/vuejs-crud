@@ -1,14 +1,40 @@
 <script setup>
-import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import API from '@/services/api'
+import { ref, reactive } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import Cookies from 'js-cookie'
 
-const email = ref('')
-const password = ref('')
+const router = useRouter()
 
-const handleLogin = (e) => {
-  // Handle login logic here
+const user = reactive({
+  email: '',
+  password: '',
+})
+
+const validation = ref({ error: '' })
+
+const handleLogin = async (e) => {
   e.preventDefault()
-  console.log('Login attempt:', { email: email.value, password: password.value })
+
+  try {
+    const { data } = await API.post('/api/login', {
+      email: user.email,
+      password: user.password,
+    })
+
+    validation.value.error = ''
+    Cookies.set('token', data.data.token)
+    Cookies.set('user', JSON.stringify(data.data.user))
+    if (Cookies.get('token')) {
+      router.push('/dashboard')
+    }
+  } catch (error) {
+    if (error.response && !error.response.data.success) {
+      validation.value.error = error.response.data.message
+    } else {
+      validation.value.error = 'Login failed. Please try again.'
+    }
+  }
 }
 </script>
 
@@ -20,13 +46,16 @@ const handleLogin = (e) => {
         Enter your credentials to sign in to your account
       </p>
 
+      <div v-if="validation.error" class="p-4 mb-4 text-sm text-red-800 rounded-md bg-red-100">
+        <span class="font-medium"> {{ validation.error }}. Please try again </span>
+      </div>
       <form @submit="handleLogin" class="space-y-6">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
           <input
             id="email"
             type="email"
-            v-model="email"
+            v-model="user.email"
             required
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="Enter your email"
@@ -38,7 +67,7 @@ const handleLogin = (e) => {
           <input
             id="password"
             type="password"
-            v-model="password"
+            v-model="user.password"
             required
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="Enter your password"
