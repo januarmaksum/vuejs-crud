@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Cookie from 'js-cookie'
+
+const isAuthenticated = () => Cookie.get('token')
 
 const routes = [
   {
@@ -15,12 +18,25 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('../views/DashboardView.vue'),
+    meta: { requiresAuth: true },
   },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const token = isAuthenticated()
+
+  if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
+    next({ name: 'home' })
+  } else if ((to.name === 'home' || to.name === 'register') && token) {
+    next({ name: 'dashboard' })
+  } else {
+    next()
+  }
 })
 
 export default router

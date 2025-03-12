@@ -12,7 +12,8 @@ const user = reactive({
 })
 
 const isLoading = ref(false)
-const validation = ref({ error: '' })
+const validation = ref([])
+const loginFailed = ref([])
 
 const handleSubmit = async (e) => {
   e.preventDefault()
@@ -24,18 +25,16 @@ const handleSubmit = async (e) => {
       password: user.password,
     })
 
-    validation.value.error = ''
+    validation.value = []
+    loginFailed.value = []
     Cookies.set('token', data.data.token)
     Cookies.set('user', JSON.stringify(data.data.user))
     if (Cookies.get('token')) {
       await router.push('/dashboard')
     }
   } catch (error) {
-    if (error.response && !error.response.data.success) {
-      validation.value.error = error.response.data.message
-    } else {
-      validation.value.error = 'Login failed. Please try again.'
-    }
+    loginFailed.value = error.response.data
+    validation.value = error.response.data
   } finally {
     isLoading.value = false
   }
@@ -50,8 +49,16 @@ const handleSubmit = async (e) => {
         Enter your credentials to sign in to your account
       </p>
 
-      <div v-if="validation.error" class="p-4 mb-4 text-sm text-red-800 rounded-md bg-red-100">
-        <span class="font-medium">{{ validation.error }}</span>
+      <ul
+        v-if="validation.errors"
+        class="p-4 mb-4 text-sm text-red-800 rounded-md bg-red-100 list-disc pl-7"
+      >
+        <li v-for="(error, index) in validation.errors" :key="index" class="font-medium">
+          {{ error.msg }}
+        </li>
+      </ul>
+      <div v-if="loginFailed.message" class="p-4 mb-4 text-sm text-red-800 rounded-md bg-red-100">
+        <span class="font-medium">{{ loginFailed.message }}</span>
       </div>
       <form @submit="handleSubmit" class="space-y-6">
         <div>
