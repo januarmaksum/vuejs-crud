@@ -1,9 +1,7 @@
-//import axios
 import axios from 'axios'
 
-const Api = axios.create({
-  //set default endpoint API
-  baseURL: 'http://localhost:3000',
+const API = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 })
 
-export default Api
+export default API
