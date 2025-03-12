@@ -9,14 +9,15 @@ const user = reactive({
   name: '',
   email: '',
   password: '',
-  password_confirmation: '',
 })
 
+const isLoading = ref(false)
 const validation = ref({ errors: [] })
 const successMessage = ref('')
 
-const handleRegister = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault()
+  isLoading.value = true
 
   try {
     const response = await API.post('/api/register', {
@@ -30,15 +31,28 @@ const handleRegister = async (e) => {
 
     setTimeout(() => {
       router.push('/')
-    }, 2000)
+    }, 3000)
   } catch (error) {
     if (error.response && error.response.status === 422) {
       validation.value.errors = error.response.data.errors
     } else {
-      console.error('Register failed:', error)
+      validation.value.errors = [
+        {
+          msg: 'Register failed. Please try again.',
+        },
+      ]
     }
   }
 }
+
+router.beforeEach((to, from, next) => {
+  isLoading.value = true
+  next()
+})
+
+router.afterEach(() => {
+  isLoading.value = false
+})
 </script>
 
 <template>
@@ -64,7 +78,7 @@ const handleRegister = async (e) => {
         <span class="font-medium">{{ successMessage }}</span>
       </div>
 
-      <form @submit="handleRegister" class="space-y-6">
+      <form @submit="handleSubmit" class="space-y-6">
         <div>
           <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
           <input
@@ -101,14 +115,14 @@ const handleRegister = async (e) => {
           />
         </div>
 
-        <div>
-          <button
-            type="submit"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Create Account
-          </button>
-        </div>
+        <button
+          type="submit"
+          :disabled="isLoading"
+          class="w-full flex cursor-pointer justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          :class="{ 'opacity-50 cursor-not-allowed': isLoading }"
+        >
+          Create Account
+        </button>
       </form>
 
       <p class="mt-4 text-center text-sm text-gray-600">
