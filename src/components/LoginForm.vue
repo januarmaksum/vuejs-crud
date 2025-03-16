@@ -28,7 +28,6 @@ const handleSubmit = async (e) => {
     validation.value = []
     loginFailed.value = []
     Cookies.set('token', data.data.token)
-    Cookies.set('user', JSON.stringify(data.data.user))
     if (Cookies.get('token')) {
       await router.push('/dashboard')
     }
