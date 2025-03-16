@@ -1,4 +1,5 @@
 <script setup>
+import { ROUTES } from '@/constants/routes'
 import API from '@/services/api'
 import { ref, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
@@ -30,7 +31,7 @@ const handleSubmit = async (e) => {
     successMessage.value = response.data.message
 
     setTimeout(() => {
-      router.push('/')
+      router.push(ROUTES.HOME)
     }, 3000)
   } catch (error) {
     if (error.response && error.response.status === 422) {

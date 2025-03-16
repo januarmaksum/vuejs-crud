@@ -2,10 +2,10 @@
 import { computed } from 'vue'
 import { RouterView } from 'vue-router'
 import IconLucide from '../icons/IconLucide.vue'
-import Cookies from 'js-cookie'
+import { removeAuth } from '@/lib'
 
 const handleLogout = () => {
-  Cookies.remove('token')
+  removeAuth()
   window.location.reload()
 }
 

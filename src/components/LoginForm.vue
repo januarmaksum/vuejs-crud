@@ -2,7 +2,8 @@
 import API from '@/services/api'
 import { ref, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import Cookies from 'js-cookie'
+import { ROUTES } from '@/constants/routes'
+import { isAuthenticated, setAuth } from '@/lib'
 
 const router = useRouter()
 
@@ -27,9 +28,9 @@ const handleSubmit = async (e) => {
 
     validation.value = []
     loginFailed.value = []
-    Cookies.set('token', data.data.token)
-    if (Cookies.get('token')) {
-      await router.push('/dashboard')
+    setAuth(data.data.token, data.data.user)
+    if (isAuthenticated()) {
+      await router.push(ROUTES.DASHBOARD)
     }
   } catch (error) {
     loginFailed.value = error.response.data
