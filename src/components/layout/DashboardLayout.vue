@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RouterView } from 'vue-router'
 import IconLucide from '../icons/IconLucide.vue'
-import { removeAuth } from '@/lib'
+import { getUserFromCookie, removeAuth } from '@/lib'
 
 const handleLogout = () => {
   removeAuth()
@@ -43,9 +43,22 @@ const menuItems = computed(() => [
       </nav>
     </div>
 
-    <div class="flex-1 overflow-auto">
-      <div class="p-6">
-        <RouterView />
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="bg-white shadow">
+        <div class="flex justify-end items-center px-6 h-16">
+          <div class="flex items-center">
+            <span class="text-gray-700 mr-2">Welcome,</span>
+            <span class="font-semibold text-gray-900">{{
+              getUserFromCookie()?.name || 'Guest'
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-auto">
+        <div class="p-6">
+          <RouterView />
+        </div>
       </div>
     </div>
   </div>

@@ -24,3 +24,15 @@ export const getDecodedToken = () => {
     return null
   }
 }
+
+export const getUserFromCookie = () => {
+  const user = Cookie.get('user')
+  if (!user) return null
+
+  try {
+    return JSON.parse(user)
+  } catch (error) {
+    console.error('Error parsing user JSON:', error)
+    return null
+  }
+}

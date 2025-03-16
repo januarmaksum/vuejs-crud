@@ -34,6 +34,7 @@ const handleSubmit = async (e) => {
       router.push(ROUTES.HOME)
     }, 3000)
   } catch (error) {
+    isLoading.value = false
     if (error.response && error.response.status === 422) {
       validation.value.errors = error.response.data.errors
     } else {
