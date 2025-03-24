@@ -4,4 +4,6 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   USERS: '/users',
   RESTRICTED: '/restricted',
+  UNAUTHORIZED: '/unauthorized',
+  NOT_FOUND: '/not-found',
 }

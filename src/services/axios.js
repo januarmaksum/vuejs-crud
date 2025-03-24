@@ -1,5 +1,5 @@
 import { ROUTES } from '@/constants/routes'
-import { isAuthenticated, removeAuth } from '@/lib'
+import { getToken, removeAuth } from '@/lib'
 import axios from 'axios'
 
 const API = axios.create({
@@ -8,7 +8,7 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    const token = isAuthenticated()
+    const token = getToken()
 
     if (token) {
       config.headers.Authorization = `${token}`

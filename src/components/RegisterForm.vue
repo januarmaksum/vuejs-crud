@@ -1,10 +1,9 @@
 <script setup>
 import { ROUTES } from '@/constants/routes'
-import API from '@/services/api'
+import { APIS_Register } from '@/services/api/register'
 import { ref, reactive } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-
-const router = useRouter()
+import { RouterLink } from 'vue-router'
+import IconLucide from './icons/IconLucide.vue'
 
 const user = reactive({
   name: '',
@@ -16,45 +15,42 @@ const isLoading = ref(false)
 const validation = ref({ errors: [] })
 const successMessage = ref('')
 
+const clearForm = () => {
+  user.name = ''
+  user.email = ''
+  user.password = ''
+}
+
 const handleSubmit = async (e) => {
   e.preventDefault()
   isLoading.value = true
 
-  try {
-    const response = await API.post('/api/register', {
-      name: user.name,
-      email: user.email,
-      password: user.password,
-    })
-
-    validation.value.errors = []
-    successMessage.value = response.data.message
-
-    setTimeout(() => {
-      router.push(ROUTES.HOME)
-    }, 3000)
-  } catch (error) {
-    isLoading.value = false
-    if (error.response && error.response.status === 422) {
-      validation.value.errors = error.response.data.errors
-    } else {
-      validation.value.errors = [
-        {
-          msg: 'Register failed. Please try again.',
-        },
-      ]
-    }
+  const payload = {
+    name: user.name,
+    email: user.email,
+    password: user.password,
   }
+
+  APIS_Register(payload)
+    .then((data) => {
+      validation.value.errors = []
+      successMessage.value = data.message
+      clearForm()
+      isLoading.value = false
+    })
+    .catch((error) => {
+      isLoading.value = false
+      if (error.response && error.response.status === 422) {
+        validation.value.errors = error.response.data.errors
+      } else {
+        validation.value.errors = [
+          {
+            msg: 'Register failed. Please try again.',
+          },
+        ]
+      }
+    })
 }
-
-router.beforeEach((to, from, next) => {
-  isLoading.value = true
-  next()
-})
-
-router.afterEach(() => {
-  isLoading.value = false
-})
 </script>
 
 <template>
@@ -77,7 +73,12 @@ router.afterEach(() => {
         class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50"
         role="alert"
       >
-        <span class="font-medium">{{ successMessage }}</span>
+        <span class="font-medium">
+          {{ successMessage }}. Silakan login
+          <RouterLink :to="ROUTES.HOME" class="font-medium text-indigo-600 hover:text-indigo-500">
+            disini
+          </RouterLink>
+        </span>
       </div>
 
       <form @submit="handleSubmit" class="space-y-6">
@@ -123,6 +124,7 @@ router.afterEach(() => {
           class="w-full flex cursor-pointer justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           :class="{ 'opacity-50 cursor-not-allowed': isLoading }"
         >
+          <IconLucide name="UserPlus" class="w-5 h-5 mr-2" />
           Create Account
         </button>
       </form>

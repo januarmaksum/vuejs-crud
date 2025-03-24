@@ -1,11 +1,10 @@
 <script setup>
 import IconLucide from '@/components/icons/IconLucide.vue'
-import { ref } from 'vue'
+import { formatDate } from '@/lib'
+import { APIS_UserList } from '@/services/api/user/user.list'
+import { onMounted, ref } from 'vue'
 
-const users = ref([
-  { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active', role: 'Admin' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Active', role: 'User' },
-])
+const users = ref([])
 
 const showAddModal = ref(false)
 const newUser = ref({
@@ -27,6 +26,16 @@ const addUser = () => {
 const deleteUser = (userId) => {
   users.value = users.value.filter((user) => user.id !== userId)
 }
+
+const toggleStatus = (status) => {
+  return status === 'Active' ? 'Inactive' : 'Active'
+}
+
+onMounted(() => {
+  APIS_UserList().then(({ data }) => {
+    users.value = data
+  })
+})
 </script>
 
 <template>
@@ -56,6 +65,11 @@ const deleteUser = (userId) => {
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
+              No.
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Name
             </th>
             <th
@@ -66,12 +80,17 @@ const deleteUser = (userId) => {
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Status
+              Created At
             </th>
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Role
+              Updated At
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Status
             </th>
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -81,17 +100,26 @@ const deleteUser = (userId) => {
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="user in users" :key="user.id">
+          <tr v-if="users.length === 0">
+            <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center">No users found.</td>
+          </tr>
+          <tr v-else v-for="(user, index) in users" :key="user.id">
+            <td class="px-6 py-4 whitespace-nowrap">{{ index + 1 }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {{ formatDate(user.createdAt, 'fullDate') }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {{ formatDate(user.updatedAt, 'fullDate') }}
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
               >
-                {{ user.status }}
+                {{ toggleStatus(user.status) }}
               </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ user.role }}</td>
             <td class="px-6 py-4 whitespace-nowrap flex gap-2">
               <button
                 @click="deleteUser(user.id)"

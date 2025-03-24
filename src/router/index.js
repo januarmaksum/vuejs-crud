@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getDecodedToken, isAuthenticated, removeAuth } from '@/lib'
+import { getDecodedToken, getToken, removeAuth } from '@/lib'
 import { ROUTES } from '@/constants/routes'
 
 const routes = [
@@ -35,6 +35,16 @@ const routes = [
     name: 'restricted',
     component: () => import('../views/RestrictedView.vue'),
   },
+  {
+    path: ROUTES.UNAUTHORIZED,
+    name: 'unauthorized',
+    component: () => import('../views/UnauthorizedView.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('../views/NotFoundView.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -43,7 +53,7 @@ const router = createRouter({
 })
 
 const checkTokenExpiration = () => {
-  const token = isAuthenticated()
+  const token = getToken()
   if (!token) return
 
   try {
@@ -62,7 +72,7 @@ const checkTokenExpiration = () => {
 setInterval(checkTokenExpiration, 30000)
 
 router.beforeEach((to, from, next) => {
-  const token = isAuthenticated()
+  const token = getToken()
   const decoded = getDecodedToken()
   const now = Math.floor(Date.now() / 1000)
   const isTokenExpired = decoded?.exp < now

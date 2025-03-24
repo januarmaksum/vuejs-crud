@@ -1,19 +1,8 @@
 <script setup>
-import API from '@/services/api'
+import { APIS_UserList } from '@/services/api/user/user.list'
 import { ref, computed, onMounted } from 'vue'
 
 const users = ref([])
-
-const fetchUsers = async () => {
-  try {
-    const response = await API.get('/api/admin/users')
-    if (response.data.success) {
-      users.value = response.data.data
-    }
-  } catch (error) {
-    console.error('Error fetching users:', error)
-  }
-}
 
 const totalUsers = computed(() => users.value.length)
 
@@ -29,7 +18,11 @@ const newUsers = computed(() => {
   }).length
 })
 
-onMounted(fetchUsers)
+onMounted(() => {
+  APIS_UserList().then(({ data }) => {
+    users.value = data
+  })
+})
 </script>
 
 <template>
