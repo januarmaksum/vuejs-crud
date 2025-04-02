@@ -1,73 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getDecodedToken, getToken, removeAuth } from '@/lib'
-import { ROUTES } from '@/constants/routes'
-
-const routes = [
-  {
-    path: ROUTES.HOME,
-    name: 'home',
-    component: () => import('../views/HomeView.vue'),
-  },
-  {
-    path: ROUTES.REGISTER,
-    name: 'register',
-    component: () => import('../views/RegisterView.vue'),
-  },
-  {
-    path: ROUTES.DASHBOARD,
-    component: () => import('@/components/layout/DashboardLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: 'dashboard',
-        component: () => import('../views/DashboardView.vue'),
-      },
-      {
-        path: ROUTES.USERS,
-        name: 'users',
-        component: () => import('../views/UsersView.vue'),
-      },
-    ],
-    meta: { requiresAuth: true },
-  },
-  {
-    path: ROUTES.RESTRICTED,
-    name: 'restricted',
-    component: () => import('../views/RestrictedView.vue'),
-  },
-  {
-    path: ROUTES.UNAUTHORIZED,
-    name: 'unauthorized',
-    component: () => import('../views/UnauthorizedView.vue'),
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'not-found',
-    component: () => import('../views/NotFoundView.vue'),
-  },
-]
+import { checkTokenExpiration, getDecodedToken, getToken } from '@/lib'
+import { ROUTES } from '@/constants'
+import { PATH } from './path'
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes: PATH,
 })
-
-const checkTokenExpiration = () => {
-  const token = getToken()
-  if (!token) return
-
-  try {
-    const now = Math.floor(Date.now() / 1000)
-    const decoded = getDecodedToken()
-    const exp = decoded ? decoded.exp : null
-    if (exp < now) {
-      removeAuth()
-      window.location.href = ROUTES.RESTRICTED
-    }
-  } catch (error) {
-    console.error('Error decoding token:', error)
-  }
-}
 
 setInterval(checkTokenExpiration, 30000)
 
@@ -77,12 +16,12 @@ router.beforeEach((to, from, next) => {
   const now = Math.floor(Date.now() / 1000)
   const isTokenExpired = decoded?.exp < now
 
-  if (to.name === 'restricted' && token && !isTokenExpired) {
-    next({ name: 'dashboard' })
+  if (to.name === ROUTES.RESTRICTED.name && token && !isTokenExpired) {
+    next({ name: ROUTES.DASHBOARD.name })
   } else if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
-    next({ name: 'home' })
-  } else if ((to.name === 'home' || to.name === 'register') && token) {
-    next({ name: 'dashboard' })
+    next({ name: ROUTES.HOME.name })
+  } else if ((to.name === ROUTES.HOME.name || to.name === ROUTES.REGISTER.name) && token) {
+    next({ name: ROUTES.DASHBOARD.name })
   } else {
     next()
   }

@@ -1,5 +1,5 @@
 <script setup>
-import { ROUTES } from '@/constants/routes'
+import { ROUTES } from '@/constants'
 import { APIS_Register } from '@/services/api/register'
 import { ref, reactive } from 'vue'
 import { RouterLink } from 'vue-router'
@@ -40,6 +40,7 @@ const handleSubmit = async (e) => {
     })
     .catch((error) => {
       isLoading.value = false
+      successMessage.value = ''
       if (error.response && error.response.status === 422) {
         validation.value.errors = error.response.data.errors
       } else {
@@ -75,8 +76,11 @@ const handleSubmit = async (e) => {
       >
         <span class="font-medium">
           {{ successMessage }}. Silakan login
-          <RouterLink :to="ROUTES.HOME" class="font-medium text-indigo-600 hover:text-indigo-500">
-            disini
+          <RouterLink
+            :to="ROUTES.HOME.path"
+            class="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            di sini
           </RouterLink>
         </span>
       </div>

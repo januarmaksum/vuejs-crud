@@ -1,4 +1,4 @@
-import { ROUTES } from '@/constants/routes'
+import { ROUTES } from '@/constants'
 import { getToken } from '@/lib'
 import API from '@/services/axios'
 import { ENDPOINT } from '@/services/common.api'
@@ -10,7 +10,7 @@ export async function APIS_UserList() {
   const router = useRouter()
   const token = getToken()
   if (!token) {
-    router.push(ROUTES.UNAUTHORIZED)
+    router.push(ROUTES.UNAUTHORIZED.path)
     return
   }
 

@@ -1,14 +1,9 @@
 <script setup>
-import { ROUTES } from '@/constants/routes'
 import { isAuthenticated } from '@/lib'
+import { ROUTES } from '@/constants'
 
 const onClick = () => {
-  const isLogin = isAuthenticated()
-  if (isLogin) {
-    window.location.href = ROUTES.DASHBOARD
-  } else {
-    window.location.href = ROUTES.HOME
-  }
+  window.location.href = isAuthenticated() ? ROUTES.DASHBOARD.path : ROUTES.HOME.path
 }
 </script>
 <template>

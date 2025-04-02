@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES } from '@/constants'
 import { getToken, setAuth } from '@/lib'
 import { APIS_Login } from '@/services/api/login'
 import IconLucide from './icons/IconLucide.vue'
@@ -32,7 +32,7 @@ const handleSubmit = (e) => {
       loginFailed.value = []
       setAuth(data.token, data.user)
       if (getToken()) {
-        router.push(ROUTES.DASHBOARD)
+        router.push(ROUTES.DASHBOARD.path)
       }
     })
     .catch((error) => {

@@ -2,6 +2,7 @@ import Cookie from 'js-cookie'
 import { jwtDecode } from 'jwt-decode'
 import dayjs from 'dayjs'
 import 'dayjs/locale/id'
+import { ROUTES } from '@/constants'
 dayjs.locale('id')
 
 export const setAuth = (token, user) => {
@@ -55,6 +56,23 @@ export const getUserFromCookie = () => {
   } catch (error) {
     console.error('Error parsing user JSON:', error)
     return null
+  }
+}
+
+export const checkTokenExpiration = () => {
+  const token = getToken()
+  if (!token) return
+
+  try {
+    const now = Math.floor(Date.now() / 1000)
+    const decoded = getDecodedToken()
+    const exp = decoded ? decoded.exp : null
+    if (exp < now) {
+      removeAuth()
+      window.location.href = ROUTES.RESTRICTED.path
+    }
+  } catch (error) {
+    console.error('Error decoding token:', error)
   }
 }
 

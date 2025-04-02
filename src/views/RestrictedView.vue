@@ -1,8 +1,8 @@
 <script setup>
-import { ROUTES } from '@/constants/routes'
+import { ROUTES } from '@/constants'
 
 const onClick = () => {
-  window.location.href = ROUTES.HOME
+  window.location.href = ROUTES.HOME.path
 }
 </script>
 <template>

@@ -1,34 +1,25 @@
 <script setup>
 import IconLucide from '@/components/icons/IconLucide.vue'
+import { ROUTES } from '@/constants'
 import { formatDate } from '@/lib'
 import { APIS_UserList } from '@/services/api/user/user.list'
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const users = ref([])
 
-const showAddModal = ref(false)
-const newUser = ref({
-  name: '',
-  email: '',
-  role: 'User',
-})
-
-const addUser = () => {
-  users.value.push({
-    id: users.value.length + 1,
-    ...newUser.value,
-    status: 'Active',
-  })
-  showAddModal.value = false
-  newUser.value = { name: '', email: '', role: 'User' }
+const setStatus = (status) => {
+  return status ? 'Active' : 'Inactive'
 }
 
 const deleteUser = (userId) => {
-  users.value = users.value.filter((user) => user.id !== userId)
+  console.log(userId)
 }
 
-const toggleStatus = (status) => {
-  return status === 'Active' ? 'Inactive' : 'Active'
+const onAddUser = () => {
+  router.push(ROUTES.USER.CREATE.path)
 }
 
 onMounted(() => {
@@ -43,7 +34,7 @@ onMounted(() => {
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold text-gray-800">Users</h2>
       <button
-        @click="showAddModal = true"
+        @click="onAddUser"
         class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
       >
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +108,7 @@ onMounted(() => {
               <span
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
               >
-                {{ toggleStatus(user.status) }}
+                {{ setStatus(user.status) }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap flex gap-2">
@@ -137,61 +128,6 @@ onMounted(() => {
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <!-- Add User Modal -->
-    <div
-      v-if="showAddModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-    >
-      <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold mb-4">Add New User</h3>
-        <form @submit.prevent="addUser">
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-            <input
-              v-model="newUser.name"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              v-model="newUser.email"
-              type="email"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-            <select
-              v-model="newUser.role"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="User">User</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </div>
-          <div class="flex justify-end gap-2">
-            <button
-              type="button"
-              @click="showAddModal = false"
-              class="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              Add User
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   </div>
 </template>

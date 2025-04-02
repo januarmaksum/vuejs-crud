@@ -1,4 +1,4 @@
-import { ROUTES } from '@/constants/routes'
+import { ROUTES } from '@/constants'
 import { getToken, removeAuth } from '@/lib'
 import axios from 'axios'
 
@@ -29,7 +29,7 @@ API.interceptors.response.use(
 
       if (message.toLowerCase().includes('token expired')) {
         removeAuth()
-        window.location.href = ROUTES.RESTRICTED
+        window.location.href = ROUTES.RESTRICTED.path
       }
     }
     return Promise.reject(error)
