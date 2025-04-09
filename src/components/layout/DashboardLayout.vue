@@ -29,7 +29,7 @@ const menuItems = computed(() => [
             :key="item.path"
             :to="item.path"
             class="flex items-center px-6 py-3 text-gray-100 hover:bg-gray-700"
-            :class="{ 'bg-gray-700': $route.path === item.path }"
+            :class="{ 'bg-gray-700': $route.path.includes(item.path) }"
           >
             <IconLucide :name="item.icon" class="w-5 h-5 mr-3" />
             {{ item.label }}
