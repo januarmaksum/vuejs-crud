@@ -30,6 +30,11 @@ export const PATH = [
         name: ROUTES.USER.CREATE.name,
         component: () => import('../views/admin/user/UserCreateView.vue'),
       },
+      {
+        path: ROUTES.USER.EDIT.path,
+        name: ROUTES.USER.EDIT.name,
+        component: () => import('../views/admin/user/UserUpdateView.vue'),
+      },
     ],
     meta: { requiresAuth: true },
   },

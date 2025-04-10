@@ -14,8 +14,12 @@ const setStatus = (status) => {
   return status ? 'Active' : 'Inactive'
 }
 
-const deleteUser = (userId) => {
+const onDeleteUser = (userId) => {
   console.log(userId)
+}
+
+const onEditUser = (userId) => {
+  router.push(ROUTES.USER.EDIT.path.replace(':id', userId))
 }
 
 const onAddUser = () => {
@@ -113,13 +117,13 @@ onMounted(() => {
             </td>
             <td class="px-6 py-4 whitespace-nowrap flex gap-2">
               <button
-                @click="deleteUser(user.id)"
+                @click="onDeleteUser(user.id)"
                 class="text-red-600 hover:text-red-900 cursor-pointer"
               >
                 <IconLucide name="Trash2" />
               </button>
               <button
-                @click="deleteUser(user.id)"
+                @click="onEditUser(user.id)"
                 class="text-red-600 hover:text-red-900 cursor-pointer"
               >
                 <IconLucide name="Pencil" />
