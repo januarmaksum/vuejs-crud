@@ -8,7 +8,7 @@ export const ENDPOINT = {
   user: {
     list: '/api/admin/users',
     create: '/api/admin/users',
-    delete: '/api/admin/users',
+    delete: (id) => `/api/admin/users/${id}`,
     update: (id) => `/api/admin/users/${id}`,
     detail: (id) => `/api/admin/users/${id}`,
   },

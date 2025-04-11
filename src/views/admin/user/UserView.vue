@@ -1,13 +1,15 @@
 <script setup>
 import IconLucide from '@/components/icons/IconLucide.vue'
 import { ROUTES } from '@/constants'
-import { formatDate } from '@/lib'
+import { formatDate, getUserFromCookie } from '@/lib'
+import { APIS_UserDelete } from '@/services/api/user/user.delete'
 import { APIS_UserList } from '@/services/api/user/user.list'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+const isLoading = ref(false)
 const users = ref([])
 
 const setStatus = (status) => {
@@ -15,7 +17,23 @@ const setStatus = (status) => {
 }
 
 const onDeleteUser = (userId) => {
-  console.log(userId)
+  const user = getUserFromCookie()
+  if (user?.id === userId) {
+    alert('You cannot delete yourself')
+    return
+  }
+
+  const isConfirmed = confirm('Are you sure you want to delete this user?')
+  if (!isConfirmed) return
+
+  APIS_UserDelete(userId)
+    .then(() => {
+      isLoading.value = true
+      fetchUsers()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 }
 
 const onEditUser = (userId) => {
@@ -26,10 +44,22 @@ const onAddUser = () => {
   router.push(ROUTES.USER.CREATE.path)
 }
 
+const fetchUsers = () => {
+  APIS_UserList()
+    .then(({ data }) => {
+      users.value = data
+    })
+    .catch(() => {
+      users.value = []
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
+}
+
 onMounted(() => {
-  APIS_UserList().then(({ data }) => {
-    users.value = data
-  })
+  isLoading.value = true
+  fetchUsers()
 })
 </script>
 
@@ -95,7 +125,14 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-if="users.length === 0">
+          <tr v-if="isLoading">
+            <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center">
+              <div
+                class="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-gray-500"
+              ></div>
+            </td>
+          </tr>
+          <tr v-else-if="users.length === 0">
             <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center">No users found.</td>
           </tr>
           <tr v-else v-for="(user, index) in users" :key="user.id">
